@@ -62,21 +62,24 @@ function TBPlayer(element, options) {
 	options.showTime	= options.showTime!=undefined		? options.showTime		 : true;
 	options.autoplay	= options.autoplay!=undefined		? options.autoplay		 : true;
 	options.volume		= options.volume!=undefined		 	? options.volume		 : 1;
-	
+
 	/* CONSTRUCT */
-	
-	
+
+	TBP_INIT = true;
 
 
 	/* PRIVATE */
 
 	function buildAudioObject(n) {
 		var sources = options.playlist[n];
-		
-		// remove ols sources
+
+		if (!sources)
+			throw new RangeError("tbplayer: index "+n+" not in playlist.");
+
+		// remove old sources
 		while (player.lastChild)
 			player.removeChild(player.lastChild);
-		
+
 		// add new sources
 		for (var mimetype in sources) {
 			for (var i=0; src = sources[mimetype][i]; i++) {
@@ -86,7 +89,7 @@ function TBPlayer(element, options) {
 				player.appendChild(s);
 			}
 		}
-		
+
 		player.load();
 	}
 
@@ -101,23 +104,26 @@ function TBPlayer(element, options) {
 			return player.volume = n;
 		}
 	});
-	
+
 	this.play = function(n) {
 		if (typeof(n)=="number") {
 			buildAudioObject(n);
 		}
 		player.play();
 	}
-	
+
 	this.pause = function() {
 		player.pause();
 	}
-	
+
 	// a reference to the player object
 	this.playerObject = player;
 
 }
 
+// # PUBLIC STUFF # //
+
+TBP_INIT = false;
 
 
 // # DOCUMENT BINDINGS # //
@@ -150,12 +156,13 @@ function tbp_triggerPage(e) {
 		// load DOM only for certain links
 		if (	target.tagName.match(/^(a|area)$/i) && !target.href.match(/\.(jpg|png)$/i)
 				&& !target.href.match(/^javascript:/) && target.target != "_blank"
-				&& (target.target.match(/^_.?$/i) || target.target=="")
+				&& (target.target.match(/^_.+$/i) || target.target=="")
 		) {
 
 			var link = target.href;
 
-			if (!~link.indexOf("://") || link.match(new RegExp("^http(s)?://"+location.host))) {
+			// ignore external links
+			if (!~link.indexOf("://") || link.match(new RegExp("^https?://"+location.host))) {
 				if (e.preventDefault)
 					e.preventDefault();
 				if (history.pushState) {
@@ -173,7 +180,3 @@ if (document.addEventListener) {
 	document.body.addEventListener("click", tbp_triggerPage, false);
 	window.addEventListener("popstate", tbp_loadPage, false);
 }
-/*else {
-	document.body.attachEvent("onclick", tbp_triggerPage);
-	window.attachEvent("onpopstate", tbp_pageLoad);			// is this supported?
-}*/
