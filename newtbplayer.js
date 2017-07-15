@@ -1,11 +1,11 @@
 /**
  *
- *	== TBPlayer.js ==
+ *  == TBPlayer.js ==
  *
- *	@description:   Simple Player for Tumblr, made using HTML5's Audio Object
- *	@author:        Matteo Bernardini
- *	@license:       MIT (2015)
- *	@version:       2.0
+ *  @description:   Simple Player for Tumblr, made using HTML5's Audio Object
+ *  @author:        Matteo Bernardini
+ *  @license:       MIT (2015)
+ *  @version:       2.0
  *
  */
 
